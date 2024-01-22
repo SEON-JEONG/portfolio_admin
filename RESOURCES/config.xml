@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+
+<configuration>
+	<typeAliases>
+		<typeAlias alias="Freeboard" type="admin.freeboard_dao"/> <!-- 공지사항 테이블 -->
+		<typeAlias alias="Masteradmin" type="admin.masteradmin_dao"/>	<!-- 회원가입 테이블-->
+		<typeAlias alias="Siteinfo" type="admin.siteinfo_dao"/>	<!-- siteinfo 테이블-->
+		<typeAlias alias="Faq" type="admin.faq_dao"/>	<!-- faq 테이블-->
+		<typeAlias alias="Airplane" type="admin.airplane_dao"/>	<!-- airplane 테이블	 -->
+	</typeAliases>
+</configuration>

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="AirplaneDB">
+
+	<!-- 항공코드 등록 -->
+	<insert id="insert_air_category">
+		insert into air_code values ('0',#{airplane_code},#{airname},#{aircode},#{airflight},#{airuse},now())
+	</insert>
+	
+	<!-- 항공코드 등록시 중복 확인 -->
+	<select id="select_air_category_aircode_ck" parameterType="String" resultType="Integer">
+		select count(*) from air_code where aircode = #{aircode}
+	</select>
+	
+	<!-- 항공코드 검색 -->
+	<select id="search_air_code" parameterType="map" resultType="Airplane">
+		select * from air_code
+		<where>
+			<if test="search_ch == '항공사명'">
+				airname like concat('%',#{search},'%')
+			</if>
+			<if test="search_ch == '항공코드'">
+				aircode like concat('%',#{search},'%')
+			</if>
+		</where>
+		order by aidx desc
+	</select>
+	
+	<!-- 전체 항공 코드 출력 -->
+	<select id="select_air_category_all" resultType="Airplane">
+		select * from  air_code
+	</select>
+	
+	<!-- 중복 제외 : 전체 항공코드 출력 -->
+	<select id="select_air_category" resultType="Airplane">
+		select distinct airplane_code,airuse from  air_code
+	</select>
+	
+	<!-- 특정 항공코드 출력 -->
+	<select id="select_air_category_one" resultType="Airplane">
+		select * from air_code where aidx = #{aidx}
+	</select>
+	
+	<!-- 항공 코드 수정 -->
+	<update id="update_air_category">
+		update air_code set airplane_code = #{airplane_code}, airname = #{airname},
+		aircode = #{aircode}, airflight = #{airflight} where aidx = #{aidx}
+	</update>
+	
+	<!-- 선택 항공코드 삭제 -->
+	<delete id="deleteList_air_code">
+		delete from air_code where FIND_IN_SET(aidx, #{aidx})
+	</delete>
+	
+	<!-- 선택한 공항코드의 데이터만 추출 -->
+	<select id="select_airname_ch" parameterType="String" resultType="String">
+		select distinct airname from air_code where airplane_code = #{code} and airuse='Y'
+	</select>
+	
+	<!-- 선택한 공항코드,항공사명으로 항공코드 데이터 추출 -->
+	<select id="select_aircode_ch" resultType="String">
+		select aircode from air_code where airplane_code = #{airplane_code} and airname = #{airname} and airuse='Y'
+	</select>
+	
+	<!-- 선택한 항공 코드로 항공편면 데이터만 추출 -->
+	<select id="select_airflight" resultType="String">
+		select airflight from air_code where aircode=#{aircode}
+	</select>
+	
+	<!-- 항공코드의 인덱스 넘버 조회 -->
+	<select id="select_aircode_index" resultType="String">
+		select aidx from air_code where aircode=#{aircode}
+	</select>
+	
+	<!-- 항공편 등록 -->
+	<insert id="insert_air_plane">
+		insert into air_plane values('0',#{aidx},#{aircode},#{start_point},
+		#{end_point},#{seat_form},#{seat_count},#{air_run},'N',now())
+	</insert>
+	
+	<!-- 항공편 리스트 출력 -->
+	<select id="select_air_plane_list" resultType="Airplane">
+		select * from v_air_plane_list order by pidx desc
+	</select>
+	
+	<!-- 페이지당 보일 글 -->
+	<select id="admin_product_pg_select" parameterType="Integer" resultType="Airplane">
+		select * from v_air_plane_list order by pidx desc limit #{pg},3	
+	</select>
+	
+	<!-- 항공편 검색 -->
+	<select id="select_air_plane_search" parameterType="map" resultType="Airplane">
+		select * from v_air_plane_list
+		<where>
+			<if test="search_ch == 's_airname'">
+				airname like concat('%',#{search},'%')
+			</if>	
+			<if test="search_ch == 's_aircode'">
+				aircode like concat('%',#{search},'%')
+			</if>	
+		</where>
+		order by pidx desc
+	</select>
+	
+	<!-- 선택 항공편 삭제 -->
+	<delete id="deleteList_air_product">
+		delete from air_plane where FIND_IN_SET(pidx, #{pidx})
+	</delete>
+	
+	<!-- 좌석 예약 검색 -->
+	<select id="select_air_seat_search" parameterType="map" resultType="Airplane">
+		select * from v_air_plane_list
+		<where>
+			<if test="search_ch == '출발지'">
+				start_point like concat('%',#{search},'%')
+			</if>
+			<if test="search_ch == '도착지'">
+				end_point like concat('%',#{search},'%')
+			</if>
+		</where>
+		order by air_plane_date desc
+	</select>
+	
+	<!-- 미설정 좌석 추출 -->
+	<select id="select_air_seat_none_reserve" resultType="Airplane">
+		select * from v_air_plane_list where air_resuerve_ck = 'N'
+	</select>
+	
+	<!-- 예매 설정 완료 좌석 추출 -->
+	<select id="select_air_seat_yes_reserve" resultType="Airplane">
+		select * from v_air_reserve_list order by ridx desc
+	</select>
+	
+	<!-- 예매 설정 -->
+	<insert id="insert_air_reserve" parameterType="map">
+		insert into air_reserve	values ('0',#{pidx},#{rstart_date},#{rend_date},#{rprice})
+	</insert>
+	
+	<!-- 예매설정 되었을 시 미예매설정 대상에서 제외 -->
+	<update id="update_air_reserve_ck_Y">
+		update air_plane set air_resuerve_ck = 'Y' where pidx=#{pidx}
+	</update>
+	
+	<!-- 고객 예매 완료 리스트 -->
+	<select id="select_air_reserve_ok" resultType="Airplane">
+		select * from v_user_reserve_list order by udate desc
+	</select>
+	
+	<!-- 예매 취소  -->
+	<delete id="delete_user_reserve">
+		delete from user_reserve where uidx = #{uidx}
+	</delete>
+	
+	<!-- 좌석 예약 검색 -->
+	<select id="search_user_reserve" parameterType="map" resultType="Airplane">
+		select * from v_user_reserve_list
+		<where>
+			<if test="search_ch == '고객명'">
+				uname like concat('%',#{search},'%')
+			</if>
+			<if test="search_ch == '연락처'">
+				utel like concat('%',#{search},'%')
+			</if>
+		</where>
+		order by udate desc
+	</select>
+	
+</mapper>

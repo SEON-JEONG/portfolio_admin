@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="siteinfoDB">
+
+	<select id="siteinfo_selectOne" resultType="Integer"> 
+		select count(*) as cnt from siteinfo;
+	</select>
+	
+	<select id="siteinfo_select" parameterType="String" resultType="Siteinfo"> 
+		select * from siteinfo;
+	</select>
+	
+	<insert id="siteinfo_insert">
+		insert into siteinfo values (#{s_title},#{s_email},#{s_point},#{s_reserves},#{s_level},#{s_corpnm},#{s_corpno},#{s_ceo},#{s_tell},#{s_number1},#{s_number2},#{s_port},#{s_add},#{s_admin},#{s_admail},#{s_banknm},#{s_bankno},#{pay_card},#{pay_hp},#{pay_book},#{pay_min_point},#{pay_max_point},#{pay_paper})
+	</insert>
+	
+	<delete id="siteinfo_update">
+		delete from siteinfo
+	</delete>
+
+</mapper>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="FaqDB">
+
+	<!-- modify -->
+	<update id="update_faq">
+		update faq_notice set fsubject = #{fsubject}, ftext = #{ftext}, fdate = now() where fidx = #{fidx}
+	</update>
+	
+	<!-- delete -->
+	<delete id="delete_faq">
+		delete from faq_notice where fidx=#{fidx}
+	</delete>
+	
+	<!-- search -->
+	<select id="search_faq" resultType="Faq">
+		select * from faq_notice where ftext like concat('%',#{search},'%') or fsubject like concat('%',#{search},'%') order by fidx desc
+	</select>
+	
+	<!-- view 및 modify -->
+	<select id="select_faq_one" resultType="Faq">
+		select * from faq_notice where fidx = #{fidx}
+	</select>
+	<!-- 글  전체 불러오기 -->
+	<select id="select_faq_all" resultType="Faq">
+	 	select * from faq_notice order by fidx desc
+	</select>
+	
+	<!-- write -->
+	<insert id="insert_faq">
+		insert into faq_notice values('0',#{fsubject},#{aname},#{ftext},now())
+	</insert>
+
+</mapper>
